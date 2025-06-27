@@ -95,3 +95,13 @@ func NewSense(w1, w2, w3 float64) model.Sense {
     return sense
 }
 ```
+
+## エンジンを作成する
+
+エンジンは、`model.Engine`インターフェイスのインスタンスです。新たに作成する場合には、
+
+```go
+Run(model.Problem, model.Sense) model.Solution
+```
+
+メソッドを持つ型を定義してください。
