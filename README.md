@@ -20,15 +20,15 @@ import (
 
 func main() {
     // 1. 問題として、問題サンプル3を使います。
-	sample := samples.Sample3()
+    sample := samples.Sample3()
     // 2. 価値基準として、DefaultSense(後述)を用います
-	sense := model.DefaultSense(1.0, 0.5)
+    sense := model.DefaultSense(1.0, 0.5)
     // 3. エンジンとして、BinaryPartitionEngine(後述)を用います
     engine := engineV1.BinaryPartitionEngine()
     // 4. Recommend 関数に情報を渡して解を得ます
-	sol := model.Recommend(sample, sense, engine)
+    sol := model.Recommend(sample, sense, engine)
     // 5. 解から参加するイベント情報を取得します
-	fmt.Println("solution: ", sol.Events)
+    fmt.Println("solution: ", sol.Events)
 }
 
 ```
