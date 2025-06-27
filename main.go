@@ -9,11 +9,11 @@ import (
 )
 
 func main() {
-	sample := samples.Sample3()
+	sample := samples.Sample6()
 	sense := model.DefaultSense(1.0, 0.5)
 	start := time.Now()
-	// sol := model.Recommend(sample, sense, engineV1.FullSearchEngine())
-	sol := model.Recommend(sample, sense, engineV1.BinaryPartitionEngine())
+	engine := engineV1.CustomBinaryPartitionEngine(engineV1.RecursiveExclusionEngine(), 20)
+	sol := model.Recommend(sample, sense, engine)
 	processTime := time.Since(start)
 	fmt.Println("solution: ", sol.Events)
 	fmt.Println("score: ", sense.Score(sol))

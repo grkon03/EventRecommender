@@ -9,6 +9,9 @@ type BinaryPartition struct {
 	start int
 	end   int
 	child bool
+
+	finisher   model.Engine
+	finishtime int // if
 }
 
 /*
@@ -19,17 +22,39 @@ Caution 1: The ptimality is not guaranteed
 Caution 2: There are a few types of "Sense" for which this engine will submit too bad solution
 e.g.) The case like an user doesn't want to participate more than 5 events
 */
-func BinaryPartitionEngine() BinaryPartition { return BinaryPartition{child: false} }
-func childBPE(start, end int) BinaryPartition {
-	return BinaryPartition{start: start, end: end, child: true}
+func BinaryPartitionEngine() BinaryPartition {
+	return BinaryPartition{
+		child:      false,
+		finisher:   FullSearchEngine(),
+		finishtime: 8,
+	}
+}
+
+func CustomBinaryPartitionEngine(finisher model.Engine, finishtime int) BinaryPartition {
+	return BinaryPartition{
+		child:      false,
+		finisher:   finisher,
+		finishtime: finishtime,
+	}
+}
+
+func (engine BinaryPartition) childBPE(start, end int) BinaryPartition {
+	return BinaryPartition{
+		start: start,
+		end:   end,
+		child: true,
+
+		finisher:   engine.finisher,
+		finishtime: engine.finishtime,
+	}
 }
 
 func (engine BinaryPartition) Run(p model.Problem, sense model.Sense) model.Solution {
 	num := len(p.Events)
 
 	// to find the best number here is good issue to consider
-	if num <= 8 {
-		return FullSearchEngine().Run(p.DeepCopy(), sense)
+	if num <= engine.finishtime {
+		return engine.finisher.Run(p.DeepCopy(), sense)
 	}
 
 	events := make([]model.Event, num)
@@ -73,8 +98,8 @@ func (engine BinaryPartition) Run(p model.Problem, sense model.Sense) model.Solu
 
 	formerP = p.SubProblem(eventsFormer)
 	latterP = p.SubProblem(eventsLatter)
-	formerS = childBPE(engine.start, midsection).Run(formerP, sense)
-	latterS = childBPE(midsection, engine.end).Run(latterP, sense)
+	formerS = engine.childBPE(engine.start, midsection).Run(formerP, sense)
+	latterS = engine.childBPE(midsection, engine.end).Run(latterP, sense)
 
 	optimal = model.EmptySolution(p)
 	optimal.AddEvents(formerS.Events)
@@ -98,7 +123,7 @@ func (engine BinaryPartition) Run(p model.Problem, sense model.Sense) model.Solu
 			}
 		}
 		formerP = p.SubProblem(apprEvents)
-		formerS = childBPE(start, end).Run(formerP, sense)
+		formerS = engine.childBPE(start, end).Run(formerP, sense)
 
 		// solve the latter problem
 
@@ -112,7 +137,7 @@ func (engine BinaryPartition) Run(p model.Problem, sense model.Sense) model.Solu
 			}
 		}
 		latterP = p.SubProblem(apprEvents)
-		latterS = childBPE(start, end).Run(latterP, sense)
+		latterS = engine.childBPE(start, end).Run(latterP, sense)
 
 		// combine
 
