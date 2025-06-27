@@ -86,7 +86,7 @@ func (NewEval) Score(s model.Solution) float64 {
     return math.Sqrt(float64(count))
 }
 
-// この価値基準を考慮に入れるような model.Sense を返すような関数
+// この価値基準を考慮に入れた model.Sense を返す関数
 
 func NewSense(w1, w2, w3 float64) model.Sense {
     sense := model.DefaultSense(w1, w2)
