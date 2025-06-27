@@ -7,6 +7,7 @@ import (
 
 type FullSearch struct{}
 
+// it seems to be able to calculate quikly only in the case up to 20 events
 func FullSearchEngine() FullSearch { return FullSearch{} }
 
 func (e FullSearch) Run(p model.Problem, sense model.Sense) model.Solution {
