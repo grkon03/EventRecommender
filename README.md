@@ -1,0 +1,68 @@
+# Event Recommender
+
+## エンジンの回し方
+
+1. `model.Problem` に全イベントとイベントを主催する全クラブの情報を保存します
+2. `model.Sense` にユーザーの価値基準を追加します
+3. `model.Engine` にエンジンを指定します
+4. `model.Recommend` 関数にこれらの情報を渡すことで、`model.Solution` として解を受け取れます
+5. `model.Solution.Events` から価値基準に適したイベント一覧を取得します
+
+## 標準エンジン
+
+あらかじめ用意したエンジンです
+
+- `engineV1.FullSearchEngine()`
+  - 全探索をします
+  - 常に最適解を出します
+  - イベント数がおおよそ 20 を超えたあたりから時間がかかり始めます
+- `engineV1.BinaryPartitionEngine()`
+  - Quick Sort のように Binary Partitioning を用いて実装しています
+  - 最適解が出ないですが、おおよそ近いスコアの解を計算します
+  - "〜に 3 個以上参加する" や "〜を 1 回以下に抑える" といった絶対数で指定する条件におそらく弱いです
+  - イベント個数が 100 個でも 2 秒程度で計算します
+
+## 価値基準について
+
+デフォルトの価値基準として、`model.DefaultSense(w1, w2 float32)`関数が用意されています。
+この価値基準では、"参加するイベントが多いほど良い"と"参加するイベントを主催するクラブの種類が多いほど良い"という価値基準を採用しており、`w1`, `w2` にそれらの重みづけをします。
+
+`model.Sense` を設定することによって、そのほかにもユーザーの価値基準に対応できます。
+価値基準を追加するためには新しい価値基準 `model.Evaluation` を作成し、`model.Sense.Add` 関数により重みと共に追加します。
+`model.Evaluation` は `Score(model.Solution) float32` メソッドを持つインターフェイスです。この値が大きいほどユーザーが好むスケジュールであることを意味しています。
+
+```go:newsense.go
+package newsense
+
+import (
+    "math"
+    "recsys/model"
+)
+
+// 新しい価値基準を定義する
+
+/*
+価値基準:
+ClubID が 1 であるクラブのイベントにたくさん参加したいが、参加するイベントが多い場合はそれ以上増やしてもそこまで嬉しさは変わらない
+*/
+type NewEval struct {}
+func (NewEval) Score(s model.Solution) float32 {
+    count := 0
+    for _, e := range s.Events {
+        if e.ClubID == 1 {
+            count++
+        }
+    }
+
+    return math.Sqrt(float64(count))
+}
+
+// この価値基準を考慮に入れるような model.Sense を返すような関数
+
+func NewSense(w1, w2, w3 float32) model.Sense {
+    ds := model.DefaultSense(w1, w2)
+    ds.Add(NewEval{}, w3)
+
+    return ds
+}
+```
