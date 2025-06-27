@@ -8,6 +8,35 @@
 4. `model.Recommend` 関数にこれらの情報を渡すことで、`model.Solution` として解を受け取れます
 5. `model.Solution.Events` から価値基準に適したイベント一覧を取得します
 
+```go:main.go
+package main
+
+import (
+	"fmt"
+	"recsys/engineV1"
+	"recsys/model"
+	"recsys/samples"
+)
+
+func main() {
+    // 1. 問題として、問題サンプル3を使います。
+	sample := samples.Sample3()
+    // 2. 価値基準として、DefaultSense(後述)を用います
+	sense := model.DefaultSense(1.0, 0.5)
+    // 3. エンジンとして、BinaryPartitionEngine(後述)を用います
+    engine := engineV1.BinaryPartitionEngine()
+    // 4. Recommend 関数に情報を渡して解を得ます
+	sol := model.Recommend(sample, sense, engine)
+    // 5. 解から参加するイベント情報を取得します
+	fmt.Println("solution: ", sol.Events)
+}
+
+```
+
+## サンプル
+
+`samples`パッケージには`model.Problem` のサンプルがいくつか置いてあります。
+
 ## 標準エンジン
 
 あらかじめ用意したエンジンです
