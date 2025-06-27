@@ -26,6 +26,11 @@ type Problem struct {
 	Events []Event
 }
 
+// caution: assuming subevents is subset of p.Events (this method does not assert)
+func (p Problem) SubProblem(subevents []Event) Problem {
+	return Problem{Clubs: p.Clubs, Events: subevents}
+}
+
 func (p Problem) DeepCopy() Problem {
 	var new Problem
 	util.DeepCopy(p, &new)
