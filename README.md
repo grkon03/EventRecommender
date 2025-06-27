@@ -53,12 +53,12 @@ func main() {
 
 ## 価値基準について
 
-デフォルトの価値基準として、`model.DefaultSense(w1, w2 float32)`関数が用意されています。
+デフォルトの価値基準として、`model.DefaultSense(w1, w2 float64)`関数が用意されています。
 この価値基準では、"参加するイベントが多いほど良い"と"参加するイベントを主催するクラブの種類が多いほど良い"という価値基準を採用しており、`w1`, `w2` にそれらの重みづけをします。
 
 `model.Sense` を設定することによって、そのほかにもユーザーの価値基準に対応できます。
 価値基準を追加するためには新しい価値基準 `model.Evaluation` を作成し、`model.Sense.Add` 関数により重みと共に追加します。
-`model.Evaluation` は `Score(model.Solution) float32` メソッドを持つインターフェイスです。この値が大きいほどユーザーが好むスケジュールであることを意味しています。
+`model.Evaluation` は `Score(model.Solution) float64` メソッドを持つインターフェイスです。この値が大きいほどユーザーが好むスケジュールであることを意味しています。
 
 ```go:newsense.go
 package newsense
@@ -75,7 +75,7 @@ import (
 ClubID が 1 であるクラブのイベントにたくさん参加したいが、参加するイベントが多い場合はそれ以上増やしてもそこまで嬉しさは変わらない
 */
 type NewEval struct {}
-func (NewEval) Score(s model.Solution) float32 {
+func (NewEval) Score(s model.Solution) float64 {
     count := 0
     for _, e := range s.Events {
         if e.ClubID == 1 {
@@ -88,7 +88,7 @@ func (NewEval) Score(s model.Solution) float32 {
 
 // この価値基準を考慮に入れるような model.Sense を返すような関数
 
-func NewSense(w1, w2, w3 float32) model.Sense {
+func NewSense(w1, w2, w3 float64) model.Sense {
     ds := model.DefaultSense(w1, w2)
     ds.Add(NewEval{}, w3)
 

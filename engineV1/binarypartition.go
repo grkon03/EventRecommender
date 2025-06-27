@@ -64,7 +64,7 @@ func (engine BinaryPartition) Run(p model.Problem, sense model.Sense) model.Solu
 	}
 
 	var optimal, consider model.Solution
-	var optscore, conscore float32 = 0, 0
+	var optscore, conscore float64 = 0, 0
 
 	var formerP, latterP model.Problem
 	var formerS, latterS model.Solution

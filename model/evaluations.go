@@ -4,21 +4,21 @@ import "recsys/util"
 
 type MostNumberOfEventsAsPossible struct{}
 
-func (MostNumberOfEventsAsPossible) Score(s Solution) (score float32) {
-	return float32(len(s.Events))
+func (MostNumberOfEventsAsPossible) Score(s Solution) (score float64) {
+	return float64(len(s.Events))
 }
 
 type MostKindOfClubsAsPossible struct{}
 
-func (MostKindOfClubsAsPossible) Score(s Solution) (score float32) {
+func (MostKindOfClubsAsPossible) Score(s Solution) (score float64) {
 	clubIDs := util.NewSet[int]()
 	for _, e := range s.Events {
 		clubIDs.Add(e.ClubID)
 	}
-	return float32(clubIDs.Count())
+	return float64(clubIDs.Count())
 }
 
-func DefaultSense(weightOfMostNum, weightOfMostKind float32) (s Sense) {
+func DefaultSense(weightOfMostNum, weightOfMostKind float64) (s Sense) {
 	s = MakeSense()
 	s.Add(MostNumberOfEventsAsPossible{}, weightOfMostNum)
 	s.Add(MostKindOfClubsAsPossible{}, weightOfMostKind)

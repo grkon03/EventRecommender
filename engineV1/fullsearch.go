@@ -13,7 +13,7 @@ func FullSearchEngine() FullSearch { return FullSearch{} }
 func (e FullSearch) Run(p model.Problem, sense model.Sense) model.Solution {
 	var optimal, consider model.Solution
 	optimal = model.EmptySolution(p)
-	var optscore, conscore float32 = 0, 0
+	var optscore, conscore float64 = 0, 0
 
 	eventset := util.MakeSetFromSlice(p.Events)
 
