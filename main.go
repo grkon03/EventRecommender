@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sample := samples.Sample2()
+	sample := samples.Sample3()
 	sense := model.DefaultSense(1.0, 0.5)
 	start := time.Now()
 	// sol := model.Recommend(sample, sense, engineV1.FullSearchEngine())
